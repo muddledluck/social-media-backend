@@ -25,7 +25,7 @@ server.get("/health-check", async function () {
 
 async function main() {
   server.register(db, config.get("db"));
-  server.register(userRoute);
+  server.register(userRoute, { prefix: "/api/user" });
   // ROUTES.forEach((item) => {
   //   server.register(item.route, item.options);
   // });
