@@ -1,10 +1,27 @@
 import Fastify from "fastify";
+import bcrypt from "bcrypt";
 import dotenv from "dotenv";
 import config from "config";
-import db from "./models";
+import swagger from "@fastify/swagger";
 import ROUTES from "./routes";
-import userRoute from "./modules/user/user.route";
+import { userSchema } from "./modules/user/user.schema";
+import { withRefResolver } from "fastify-zod";
+import { version } from "../package.json";
+import prisma from "./utils/prisma";
 dotenv.config();
+prisma.$use(async (params, next) => {
+  if (params.model === "User") {
+    if (params.action === "create") {
+      const salt = await bcrypt.genSalt(config.get<number>("saltWorkFactor"));
+      const hash = bcrypt.hashSync(params.args.data.password, salt);
+      params.args.data.password = hash;
+    }
+  }
+  const result = await next(params);
+
+  return result;
+});
+
 const port = Number(process.env.PORT) || 5001;
 const server = Fastify({
   logger: {
@@ -12,8 +29,9 @@ const server = Fastify({
       target: "pino-pretty",
       options: {
         translateTime: "HH:MM:ss Z",
-        ignore: "pid,hostname",
+        ignore: "pid,hostname,reqId",
         colorize: true,
+        mkdir: true,
       },
     },
   },
@@ -24,11 +42,28 @@ server.get("/health-check", async function () {
 });
 
 async function main() {
-  server.register(db, config.get("db"));
-  server.register(userRoute, { prefix: "/api/user" });
-  // ROUTES.forEach((item) => {
-  //   server.register(item.route, item.options);
-  // });
+  for (const schema of [...userSchema]) {
+    server.addSchema(schema);
+  }
+  server.register(
+    swagger,
+    withRefResolver({
+      routePrefix: "/docs",
+      exposeRoute: true,
+      staticCSP: true,
+      openapi: {
+        info: {
+          title: "Social Media API",
+          description: "Social Media API's",
+          version,
+        },
+      },
+    })
+  );
+
+  ROUTES.forEach((item) => {
+    server.register(item.route, item.options);
+  });
   try {
     await server.listen({
       port,
