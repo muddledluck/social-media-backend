@@ -1,4 +1,4 @@
-import Fastify from "fastify";
+import Fastify, { FastifyReply, FastifyRequest } from "fastify";
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
 import config from "config";
@@ -8,7 +8,20 @@ import { userSchema } from "./modules/user/user.schema";
 import { withRefResolver } from "fastify-zod";
 import { version } from "../package.json";
 import prisma from "./utils/prisma";
+
+import { sessionSchema } from "./modules/session/session.schema";
+import { JWT } from "@fastify/jwt";
+import { deserializedUser } from "./utils/hooks";
+import { userVerifyJWTPayloadType } from "./utils/type";
 dotenv.config();
+
+declare module "fastify" {
+  interface FastifyRequest {
+    jwt: JWT;
+    currentUser: userVerifyJWTPayloadType;
+  }
+}
+
 prisma.$use(async (params, next) => {
   if (params.model === "User") {
     if (params.action === "create") {
@@ -17,7 +30,7 @@ prisma.$use(async (params, next) => {
       params.args.data.password = hash;
     }
   }
-  const result = await next(params);
+  const result: any = await next(params);
 
   return result;
 });
@@ -36,13 +49,20 @@ const server = Fastify({
     },
   },
 });
+server.register(require("@fastify/jwt"), {
+  secret: {
+    private: process.env.PRIVATE_KEY,
+    public: config.get("publicKey"),
+  },
+  sign: { algorithm: "RS256" },
+});
 
 server.get("/health-check", async function () {
   return { status: "OK" };
 });
 
 async function main() {
-  for (const schema of [...userSchema]) {
+  for (const schema of [...userSchema, ...sessionSchema]) {
     server.addSchema(schema);
   }
   server.register(
@@ -60,6 +80,7 @@ async function main() {
       },
     })
   );
+  server.addHook("onRequest", deserializedUser);
 
   ROUTES.forEach((item) => {
     server.register(item.route, item.options);

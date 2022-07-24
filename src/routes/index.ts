@@ -1,4 +1,5 @@
 import { FastifyPluginAsync, FastifyPluginOptions } from "fastify";
+import sessionRoute from "../modules/session/session.route";
 import userRoute from "../modules/user/user.route";
 
 interface RoutesInterface {
@@ -6,12 +7,17 @@ interface RoutesInterface {
   options: FastifyPluginOptions;
 }
 
-// !TODO: Create Type of ROUTES array
 const ROUTES: RoutesInterface[] = [
   {
     route: userRoute,
     options: {
       prefix: "/api/users",
+    },
+  },
+  {
+    route: sessionRoute,
+    options: {
+      prefix: "/api/session",
     },
   },
 ];

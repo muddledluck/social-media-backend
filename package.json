@@ -7,13 +7,13 @@
     "dev": "concurrently --kill-others \"npx prisma studio\" \"tsnd --trace-warnings --respawn --transpile-only --exit-child src/app.ts\""
   },
   "dependencies": {
+    "@fastify/jwt": "^6.3.1",
     "@fastify/swagger": "^7.4.1",
     "@prisma/client": "^4.1.0",
     "bcrypt": "^5.0.1",
     "config": "^3.3.7",
     "dotenv": "^16.0.1",
     "fastify": "^4.2.1",
-    "fastify-jwt": "^4.2.0",
     "fastify-zod": "^1.0.2",
     "zod": "^3.17.3",
     "zod-to-json-schema": "^3.17.0"

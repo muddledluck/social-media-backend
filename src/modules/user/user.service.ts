@@ -1,8 +1,10 @@
+import Users from "../../models/user";
 import prisma from "../../utils/prisma";
+import { CreateSessionInput } from "../session/session.schema";
 import { CreateUserInput } from "./user.schema";
-
+const User = Users(prisma.user);
 export async function createUser(input: CreateUserInput) {
-  const user = await prisma.user.findFirst({
+  const user = await User.findFirst({
     where: { email: input.email },
   });
   if (user) {
@@ -11,7 +13,7 @@ export async function createUser(input: CreateUserInput) {
       user,
     };
   }
-  const newUser = await prisma.user.create({
+  const newUser = await User.create({
     data: {
       ...input,
     },
@@ -20,4 +22,8 @@ export async function createUser(input: CreateUserInput) {
     isExist: false,
     user: newUser,
   };
+}
+
+export async function validatePassword(input: CreateSessionInput) {
+  return User.comparePassword(input);
 }

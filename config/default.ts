@@ -1,5 +1,4 @@
 export default {
-  PORT: null,
   saltWorkFactor: 10,
   accessTokenTTL: "15m",
   refreshTokenTTL: "1y",
