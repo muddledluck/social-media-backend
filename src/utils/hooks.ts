@@ -53,6 +53,10 @@ export async function deserializedUser(
   }
   const { decoded, expired } = verifyJwt(this.jwt, accessToken);
   if (decoded) {
+    const session = await prisma.session.findFirst({
+      where: { id: decoded.session },
+    });
+    if (!session || !session.valid) return;
     request.currentUser = decoded;
   }
 
@@ -73,6 +77,7 @@ export async function deserializedUser(
         ...user,
         session: session.id,
       };
+      request.currentUser = payload;
       const newAccessToken = this.jwt.sign(payload, {
         expiresIn: config.get<number>("accessTokenTTL"),
       });
