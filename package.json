@@ -7,7 +7,7 @@
     "dev": "concurrently --kill-others \"npx prisma studio\" \"tsnd --trace-warnings --respawn --transpile-only --exit-child src/app.ts\"",
     "generateDB": "npx prisma generate",
     "build": "rm -rf build && tsc -p .",
-    "start": "node ./build/src/app.js"
+    "start": "node ./build/api/index.js"
   },
   "dependencies": {
     "@fastify/cors": "^8.0.0",

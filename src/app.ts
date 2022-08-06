@@ -1,4 +1,4 @@
-import Fastify, { FastifyReply, FastifyRequest } from "fastify";
+import Fastify from "fastify";
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
 import config from "config";
@@ -100,6 +100,8 @@ async function main() {
       // Generate an error on other origins, disabling access
       cb(new Error("Not allowed"), false);
     },
+    allowedHeaders: ["Content-Type", "Authorization", "X-refresh"],
+    exposedHeaders: ["refreshToken", "accessToken"],
   });
   server.addHook("onRequest", deserializedUser);
 
@@ -116,4 +118,4 @@ async function main() {
     process.exit(1);
   }
 }
-main();
+export default main;
