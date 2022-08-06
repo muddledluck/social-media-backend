@@ -3,7 +3,7 @@ import {
   FastifyPluginAsync,
   FastifyPluginOptions,
 } from "fastify";
-import { registerUserHandler } from "./user.controller";
+import { getUserDetailsById, registerUserHandler } from "./user.controller";
 import { $ref } from "./user.schema";
 
 // Declaration merging
@@ -24,6 +24,18 @@ const userRoute: FastifyPluginAsync = async (
       },
     },
     registerUserHandler
+  );
+  server.get(
+    "/",
+    {
+      schema: {
+        querystring: $ref("getUserDetailsByIdSchema"),
+        response: {
+          200: $ref("getUserDetailsByIdResponseSchema"),
+        },
+      },
+    },
+    getUserDetailsById
   );
 };
 

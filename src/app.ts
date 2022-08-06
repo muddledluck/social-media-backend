@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import dotenv from "dotenv";
 import config from "config";
 import swagger from "@fastify/swagger";
+import cors from "@fastify/cors";
 import ROUTES from "./routes";
 import { userSchema } from "./modules/user/user.schema";
 import { withRefResolver } from "fastify-zod";
@@ -80,6 +81,23 @@ async function main() {
       },
     })
   );
+  await server.register(cors, {
+    origin: (origin, cb) => {
+      let hostname;
+      try {
+        hostname = new URL(origin).hostname;
+      } catch (error) {
+        hostname = "localhost";
+      }
+      if (hostname === "localhost") {
+        //  Request from localhost will pass
+        cb(null, true);
+        return;
+      }
+      // Generate an error on other origins, disabling access
+      cb(new Error("Not allowed"), false);
+    },
+  });
   server.addHook("onRequest", deserializedUser);
 
   ROUTES.forEach((item) => {

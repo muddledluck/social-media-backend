@@ -1,5 +1,6 @@
 import { buildJsonSchemas } from "fastify-zod";
 import { string, z } from "zod";
+import { userDetailsSchema } from "../user/user.schema";
 
 export const createSessionSchema = z.object({
   email: string({
@@ -16,8 +17,10 @@ export const createSessionResponseSchema = z.object({
 
 export const getUserSessionResponseSchema = z.object({
   id: z.string(),
-  userId: z.string(),
   userAgent: z.string(),
+  user: z.object({
+    ...userDetailsSchema,
+  }),
 });
 
 export type CreateSessionInput = z.infer<typeof createSessionSchema>;
