@@ -39,15 +39,18 @@ prisma.$use(async (params, next) => {
 const port = Number(process.env.PORT) || 5001;
 const server = Fastify({
   logger: {
-    transport: {
-      target: "pino-pretty",
-      options: {
-        translateTime: "HH:MM:ss Z",
-        ignore: "pid,hostname,reqId",
-        colorize: true,
-        mkdir: true,
-      },
-    },
+    transport:
+      process.env.NODE_ENV === "production"
+        ? undefined
+        : {
+            target: "pino-pretty",
+            options: {
+              translateTime: "HH:MM:ss Z",
+              ignore: "pid,hostname,reqId",
+              colorize: true,
+              mkdir: true,
+            },
+          },
   },
 });
 server.register(require("@fastify/jwt"), {
