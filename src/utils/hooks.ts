@@ -10,7 +10,9 @@ import { userVerifyJWTPayloadType } from "./type";
 import prisma from "./prisma";
 
 // !TODO: define type of data
-// @ts-ignore
+interface IHeaders {
+  "x-refresh": string;
+}
 
 const verifyJwt = (jwt: JWT, token: string) => {
   try {
@@ -35,7 +37,9 @@ const verifyJwt = (jwt: JWT, token: string) => {
 
 export async function deserializedUser(
   this: FastifyInstance,
-  request: FastifyRequest,
+  request: FastifyRequest<{
+    Headers: IHeaders
+  }>,
   reply: FastifyReply,
   done: HookHandlerDoneFunction
 ) {
