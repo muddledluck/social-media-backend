@@ -118,4 +118,4 @@ async function main() {
     process.exit(1);
   }
 }
-export default main;
+main();
