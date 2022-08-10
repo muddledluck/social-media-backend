@@ -89,6 +89,7 @@ async function main() {
       let hostname;
       try {
         hostname = new URL(origin).hostname;
+        console.log({ hostname, origin });
       } catch (error) {
         hostname = "localhost";
       }
