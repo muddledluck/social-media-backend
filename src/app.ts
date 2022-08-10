@@ -92,7 +92,7 @@ async function main() {
       } catch (error) {
         hostname = "localhost";
       }
-      if (hostname === "localhost") {
+      if (hostname === "localhost" || hostname === process.env.FRONTEND_URL) {
         //  Request from localhost will pass
         cb(null, true);
         return;
