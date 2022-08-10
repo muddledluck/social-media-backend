@@ -89,7 +89,6 @@ async function main() {
       let hostname;
       try {
         hostname = new URL(origin).hostname;
-        console.log({ hostname, origin, fendUrl: process.env.FRONTEND_URL });
       } catch (error) {
         hostname = "localhost";
       }
