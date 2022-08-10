@@ -38,7 +38,7 @@ const verifyJwt = (jwt: JWT, token: string) => {
 export async function deserializedUser(
   this: FastifyInstance,
   request: FastifyRequest<{
-    Headers: IHeaders
+    Headers: IHeaders;
   }>,
   reply: FastifyReply,
   done: HookHandlerDoneFunction
@@ -47,7 +47,6 @@ export async function deserializedUser(
     /^Bearer\s/,
     ""
   );
-  // !TODO define type of headers
   const refreshToken = (request.headers["x-refresh"] || "").replace(
     /^Bearer\s/,
     ""
