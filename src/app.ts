@@ -54,6 +54,7 @@ const server = Fastify({
             },
           },
   },
+  bodyLimit: 15 * 1000 * 1000, // 15MB
 });
 server.register(require("@fastify/jwt"), {
   secret: {

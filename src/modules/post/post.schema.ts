@@ -15,7 +15,7 @@ const voteObject = {
 
 export const createPostSchema = z.object({
   content: z.string().min(1),
-  files: z.string().array().optional(),
+  attachments: z.string().array().optional(),
 });
 
 export const toggleVoteSchema = z.object({

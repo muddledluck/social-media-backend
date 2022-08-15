@@ -261,9 +261,9 @@ export async function createPost(input: CreatePostInput, userId: string) {
     ...selectPostElement,
   });
   // const attachments = {};
-  if (input.files) {
-    for (let i = 0; i < input.files.length; i++) {
-      const currentFile = input.files[i];
+  if (input.attachments) {
+    for (let i = 0; i < input.attachments.length; i++) {
+      const currentFile = input.attachments[i];
       await UploadPostFile(currentFile, userId, createdPost.id);
     }
   }
