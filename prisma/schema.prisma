@@ -17,9 +17,10 @@ model User {
   password     String
   profileImage String?
   createdAt    DateTime  @default(now()) @map("createdAt") @db.Date
-  Session      Session[]
-  Profile      Profile?
+  session      Session[]
+  profile      Profile?
   Post         Post[]
+  votes        Votes[]
 }
 
 model Session {
@@ -43,14 +44,15 @@ model Profile {
 }
 
 model Post {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  id         String     @id @default(auto()) @map("_id") @db.ObjectId
   content    String
-  user       User     @relation(references: [id], fields: [userId])
-  userId     String   @db.ObjectId
-  shares     Int      @default(0)
-  attachemnt String?
-  Votes      Votes[]
-  createdAt  DateTime @default(now())
+  user       User       @relation(references: [id], fields: [userId])
+  userId     String     @db.ObjectId
+  shares     Int        @default(0)
+  attachment String?
+  votes      Votes[]
+  createdAt  DateTime   @default(now())
+  comments   Comments[]
 }
 
 model Votes {
@@ -58,5 +60,16 @@ model Votes {
   post      Post     @relation(references: [id], fields: [postId])
   postId    String   @db.ObjectId
   vote      Int      @default(0)
+  user      User     @relation(references: [id], fields: [userId])
+  userId    String   @db.ObjectId
   createdAt DateTime @default(now())
+}
+
+model Comments {
+  id       String     @id @default(auto()) @map("_id") @db.ObjectId
+  post     Post       @relation(references: [id], fields: [postId])
+  postId   String     @db.ObjectId
+  parentId String?    @db.ObjectId
+  parent   Comments?  @relation("postSubComment", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  child    Comments[] @relation("postSubComment")
 }

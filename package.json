@@ -6,14 +6,14 @@
   "scripts": {
     "dev": "concurrently --kill-others \"npx prisma studio\" \"tsnd --trace-warnings --respawn --transpile-only --exit-child src/app.ts\"",
     "generateDB": "npx prisma generate",
-    "build": "rm -rf build && tsc -p .",
+    "build": "yarn generateDB && rm -rf build && tsc -p .",
     "start": "node ./build/src/app.js"
   },
   "dependencies": {
     "@fastify/cors": "^8.0.0",
     "@fastify/jwt": "^6.3.1",
     "@fastify/swagger": "^7.4.1",
-    "@prisma/client": "^4.1.1",
+    "@prisma/client": "^4.2.1",
     "bcrypt": "^5.0.1",
     "config": "^3.3.7",
     "dotenv": "^16.0.1",
@@ -29,7 +29,7 @@
     "@types/node": "^18.0.5",
     "concurrently": "^7.3.0",
     "pino-pretty": "^8.1.0",
-    "prisma": "^4.1.1",
+    "prisma": "^4.2.1",
     "ts-node-dev": "^2.0.0",
     "typescript": "^4.7.4"
   }

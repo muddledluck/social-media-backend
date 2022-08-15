@@ -1,10 +1,9 @@
-import { PrismaClient, User } from "@prisma/client";
-import prisma from "../utils/prisma";
+import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
 import { CreateSessionInput } from "../modules/session/session.schema";
 
 export default function Users(prismaUser: PrismaClient["user"]) {
-  return Object.assign(prisma.user, {
+  return Object.assign(prismaUser, {
     /**
      * Validate user password. Return true if password is correct
      */

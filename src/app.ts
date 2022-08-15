@@ -14,6 +14,7 @@ import { sessionSchema } from "./modules/session/session.schema";
 import { JWT } from "@fastify/jwt";
 import { deserializedUser } from "./utils/hooks";
 import { userVerifyJWTPayloadType } from "./utils/type";
+import { postSchema } from "./modules/post/post.schema";
 dotenv.config();
 
 declare module "fastify" {
@@ -66,7 +67,7 @@ server.get("/health-check", async function () {
 });
 
 async function main() {
-  for (const schema of [...userSchema, ...sessionSchema]) {
+  for (const schema of [...userSchema, ...sessionSchema, ...postSchema]) {
     server.addSchema(schema);
   }
   server.register(

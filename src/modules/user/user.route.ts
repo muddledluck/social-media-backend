@@ -3,6 +3,7 @@ import {
   FastifyPluginAsync,
   FastifyPluginOptions,
 } from "fastify";
+import requireUser from "../../preHandler/requireUser";
 import { getUserDetailsById, registerUserHandler } from "./user.controller";
 import { $ref } from "./user.schema";
 
@@ -34,6 +35,7 @@ const userRoute: FastifyPluginAsync = async (
           200: $ref("getUserDetailsByIdResponseSchema"),
         },
       },
+      preHandler: [requireUser],
     },
     getUserDetailsById
   );

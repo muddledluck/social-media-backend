@@ -1,4 +1,5 @@
 import { FastifyPluginAsync, FastifyPluginOptions } from "fastify";
+import postRoute from "../modules/post/post.route";
 import sessionRoute from "../modules/session/session.route";
 import userRoute from "../modules/user/user.route";
 
@@ -18,6 +19,12 @@ const ROUTES: RoutesInterface[] = [
     route: sessionRoute,
     options: {
       prefix: "/api/session",
+    },
+  },
+  {
+    route: postRoute,
+    options: {
+      prefix: "/api/post",
     },
   },
 ];
