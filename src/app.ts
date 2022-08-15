@@ -15,8 +15,9 @@ import { JWT } from "@fastify/jwt";
 import { deserializedUser } from "./utils/hooks";
 import { userVerifyJWTPayloadType } from "./utils/type";
 import { postSchema } from "./modules/post/post.schema";
+import setupCloudinary from "./utils/cloudinary";
 dotenv.config();
-
+setupCloudinary();
 declare module "fastify" {
   interface FastifyRequest {
     jwt: JWT;

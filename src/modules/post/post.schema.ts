@@ -15,6 +15,7 @@ const voteObject = {
 
 export const createPostSchema = z.object({
   content: z.string().min(1),
+  files: z.string().array().optional(),
 });
 
 export const toggleVoteSchema = z.object({
@@ -32,14 +33,13 @@ export const postResponseSchema = z.object({
   id: z.string(),
   content: z.string(),
   shares: z.string(),
-  attachment: z
+  Attachments: z
     .object({
       id: z.string(),
       type: z.string(),
       path: z.string(),
     })
-    .array()
-    .nullable(),
+    .array(),
   createdAt: z.string(),
   user: z.object({ ...userDetailsSchema }),
   isVoted: z.boolean(),

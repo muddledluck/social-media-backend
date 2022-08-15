@@ -21,9 +21,9 @@ const postRoute: FastifyPluginAsync = async (
     {
       schema: {
         body: $ref("createPostSchema"),
-        // response: {
-        //   200: $ref("postResponseSchema"),
-        // },
+        response: {
+          200: $ref("postResponseSchema"),
+        },
       },
       preHandler: [requireUser],
     },

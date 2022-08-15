@@ -1,6 +1,27 @@
+import { UploadApiOptions } from "cloudinary";
 import { Votes } from "@prisma/client";
-import { PostModel, VoteModel } from "../../utils/prisma";
+import { uploadImage } from "../../utils/cloudinary";
+import { AttachmentModel, PostModel, VoteModel } from "../../utils/prisma";
 import { CreatePostInput } from "./post.schema";
+
+const UploadPostFile = async (file: string, userId: string, postId: string) => {
+  const options: UploadApiOptions = {
+    public_id: `${userId}/post/${postId}/${Date.now().toString()}`,
+    width: 500,
+    height: 500,
+    crop: "pad",
+  };
+  const fileData = await uploadImage(file, options);
+  if (fileData) {
+    await AttachmentModel.create({
+      data: {
+        type: fileData.resource_type,
+        path: fileData.secure_url,
+        postId: postId,
+      },
+    });
+  }
+};
 
 interface IToggleVoteReturn {
   action: "delete" | "create";
@@ -30,7 +51,7 @@ const selectPostElement = {
       },
       take: 5, // only take 5 voters to maintain performance for large number of likes
     },
-    attachment: true,
+    Attachments: true,
     content: true,
     createdAt: true,
     id: true,
@@ -40,6 +61,31 @@ const selectPostElement = {
 };
 
 const postFormateQuery = (userId: string) => [
+  {
+    $lookup: {
+      from: "Attachments",
+      let: { postId: "$_id" },
+      pipeline: [
+        {
+          $match: {
+            $expr: {
+              $eq: ["$postId", "$$postId"],
+            },
+          },
+        },
+        {
+          $project: {
+            id: {
+              $toString: "$_id",
+            },
+            type: 1,
+            path: 1,
+          },
+        },
+      ],
+      as: "Attachments",
+    },
+  },
   {
     $lookup: {
       from: "User",
@@ -188,7 +234,7 @@ const postFormateQuery = (userId: string) => [
       createdAt: {
         $toString: "$createdAt",
       },
-      attachment: null,
+      Attachments: 1,
       user: 1,
       votes: 1,
       voteCount: 1,
@@ -207,27 +253,31 @@ const postFormateQuery = (userId: string) => [
 ];
 
 export async function createPost(input: CreatePostInput, userId: string) {
-  const post = await PostModel.create({
+  const createdPost = await PostModel.create({
     data: {
-      ...input,
+      content: input.content,
       userId,
     },
     ...selectPostElement,
   });
-  return post;
+  // const attachments = {};
+  if (input.files) {
+    for (let i = 0; i < input.files.length; i++) {
+      const currentFile = input.files[i];
+      await UploadPostFile(currentFile, userId, createdPost.id);
+    }
+  }
+  const post = await PostModel.findFirst({
+    where: {
+      id: createdPost.id,
+    },
+    ...selectPostElement,
+  });
+  return { ...post, isVoted: false };
 }
 
 export async function getTimelinePost(userId: string) {
   // for now we are only showing post's which are created by user itself on his timeline i.e. on his profile page
-  // const timelinePost = PostModel.findMany({
-  //   where: {
-  //     userId,
-  //   },
-  //   ...selectPostElement,
-  //   orderBy: {
-  //     createdAt: "desc",
-  //   },
-  // });
 
   const timelinePost = PostModel.aggregateRaw({
     pipeline: [

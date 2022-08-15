@@ -44,15 +44,15 @@ model Profile {
 }
 
 model Post {
-  id         String     @id @default(auto()) @map("_id") @db.ObjectId
-  content    String
-  user       User       @relation(references: [id], fields: [userId])
-  userId     String     @db.ObjectId
-  shares     Int        @default(0)
-  attachment String?
-  votes      Votes[]
-  createdAt  DateTime   @default(now())
-  comments   Comments[]
+  id          String        @id @default(auto()) @map("_id") @db.ObjectId
+  content     String
+  user        User          @relation(references: [id], fields: [userId])
+  userId      String        @db.ObjectId
+  shares      Int           @default(0)
+  votes       Votes[]
+  createdAt   DateTime      @default(now())
+  comments    Comments[]
+  Attachments Attachments[]
 }
 
 model Votes {
@@ -66,10 +66,21 @@ model Votes {
 }
 
 model Comments {
-  id       String     @id @default(auto()) @map("_id") @db.ObjectId
-  post     Post       @relation(references: [id], fields: [postId])
-  postId   String     @db.ObjectId
-  parentId String?    @db.ObjectId
-  parent   Comments?  @relation("postSubComment", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  child    Comments[] @relation("postSubComment")
+  id          String        @id @default(auto()) @map("_id") @db.ObjectId
+  post        Post          @relation(references: [id], fields: [postId])
+  postId      String        @db.ObjectId
+  parentId    String?       @db.ObjectId
+  parent      Comments?     @relation("postSubComment", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  child       Comments[]    @relation("postSubComment")
+  Attachments Attachments[]
+}
+
+model Attachments {
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId
+  type       String
+  path       String
+  post       Post?     @relation(references: [id], fields: [postId])
+  postId     String    @db.ObjectId
+  comment    Comments? @relation(references: [id], fields: [commentsId])
+  commentsId String?   @db.ObjectId
 }
