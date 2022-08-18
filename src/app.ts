@@ -95,7 +95,11 @@ async function main() {
       } catch (error) {
         hostname = "localhost";
       }
-      if (hostname === "localhost" || hostname === process.env.FRONTEND_URL) {
+      if (
+        hostname === "localhost" ||
+        hostname === process.env.FRONTEND_URL ||
+        hostname.includes("vercel.app")
+      ) {
         //  Request from localhost will pass
         cb(null, true);
         return;
